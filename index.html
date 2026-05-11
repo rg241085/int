@@ -139,19 +139,14 @@
             text-align: center;
         }
 
-        .inp-date {
-            width: auto;
-        }
-
         .inp-amt {
-            width: auto;
+            width: 95px;
             text-align: right;
         }
 
-        /* YE NAYI LINE ADD KAREIN */
         .inp-bill {
-            min-width: 250px !important;
-            overflow: visible !important;
+            width: 100%;
+            text-align: left;
         }
 
         /* Column Widths */
@@ -207,6 +202,11 @@
 
         .btn-secondary {
             background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
             color: white;
         }
 
@@ -351,7 +351,7 @@
                 print-color-adjust: exact;
             }
 
-            /* Inputs ki setting (sabko apni jagah me fix kiya) */
+            /* Inputs ki setting */
             input {
                 border: none !important;
                 background: transparent !important;
@@ -371,42 +371,42 @@
                 text-align: right;
             }
 
-            /* --- DEBIT TABLE COLUMNS (Aapki requirement ke hisaab se % set kiya) --- */
+            /* --- DEBIT TABLE COLUMNS --- */
             #billTable th:nth-child(1) {
                 width: 12%;
             }
 
-            /* Date (Kam kiya) */
+            /* Date */
             #billTable th:nth-child(2) {
                 width: 33%;
             }
 
-            /* Particular / Bill No (Kam kiya) */
+            /* Particular / Bill No */
             #billTable th:nth-child(3) {
                 width: 11%;
             }
 
-            /* Amount (Kam kiya) */
+            /* Amount */
             #billTable th:nth-child(4) {
                 width: 9%;
             }
 
-            /* Total Days (Badhaya) */
+            /* Total Days */
             #billTable th:nth-child(5) {
                 width: 9%;
             }
 
-            /* Int Days (Badhaya) */
+            /* Int Days */
             #billTable th:nth-child(6) {
                 width: 13%;
             }
 
-            /* Interest (Badhaya) */
+            /* Interest */
             #billTable th:nth-child(7) {
                 width: 13%;
             }
 
-            /* Total (Badhaya) */
+            /* Total */
 
             /* --- CREDIT TABLE COLUMNS --- */
             #paymentTable th:nth-child(1) {
@@ -465,7 +465,8 @@
             <div style="display: flex; gap: 10px; justify-content: space-between; align-items: center;">
                 <div style="display: flex; gap: 10px;">
                     <button class="btn btn-primary" onclick="parsePastedText()">✓ Load Data</button>
-                    <button class="btn btn-secondary" onclick="clearAllData()">✗ Clear All Data</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('rawText').value=''">✗ Clear
+                        Paste Box</button>
                 </div>
                 <button class="btn btn-warning" id="toggleViewBtn" onclick="toggleHiddenView()">👁️ Show Hidden
                     Entries</button>
@@ -475,7 +476,8 @@
         <div class="top-controls">
             <div class="control-group" style="flex-grow: 1;">
                 <label>Party Name:</label>
-                <input type="text" id="partyName" style="text-align: left; font-weight: bold; font-size: 15px;">
+                <input type="text" id="partyName" style="text-align: left; font-weight: bold; font-size: 15px;"
+                    oninput="saveData()">
             </div>
             <div class="control-group">
                 <label>Rate (%/Month):</label>
@@ -490,9 +492,12 @@
                 <label>Upto Date (DD-MM-YYYY):</label>
                 <input type="date" id="calculateUpto" onchange="calculateAll()" style="width: 120px;">
             </div>
-            <div class="control-group no-print">
+
+            <div class="control-group no-print" style="flex-direction: row; gap: 10px;">
                 <button class="btn btn-primary" onclick="window.print()" style="height: 32px;">🖨️ Print
                     Statement</button>
+                <button class="btn btn-danger" onclick="resetFullProgram()" style="height: 32px;"
+                    title="Sab kuch delete karne ke liye">🗑️ Reset Full Program</button>
             </div>
         </div>
 
@@ -523,7 +528,7 @@
                 </tr>
             </tfoot>
         </table>
-        <button class="btn btn-primary no-print" onclick="addBillRow()" style="margin-bottom: 20px;">+ Add Manual
+        <button class="btn btn-primary no-print" onclick="addBillRowManual()" style="margin-bottom: 20px;">+ Add Manual
             Bill</button>
 
         <div class="section-title payment-title">2. Credit (Cr) - Jama / Payments</div>
@@ -550,7 +555,7 @@
                 </tr>
             </tfoot>
         </table>
-        <button class="btn btn-success no-print" onclick="addPaymentRow()">+ Add Manual Payment</button>
+        <button class="btn btn-success no-print" onclick="addPaymentRowManual()">+ Add Manual Payment</button>
 
         <div class="no-print" style="font-size: 12px; color: #666; margin-top: 15px;">
             * <strong>Total Days:</strong> Bill/Jama banne se le kar aaj tak ke kul din.<br>
@@ -574,16 +579,76 @@
     </div>
 
     <script>
-        document.getElementById('calculateUpto').valueAsDate = new Date();
+        // PAGE LOAD HOTE HI PURANA DATA LOAD KAREGA
+        window.onload = function () {
+            if (!localStorage.getItem('ledgerData')) {
+                document.getElementById('calculateUpto').valueAsDate = new Date();
+            }
+            loadData();
+        };
+
         const monthsMap = { "jan": "01", "feb": "02", "mar": "03", "apr": "04", "may": "05", "jun": "06", "jul": "07", "aug": "08", "sep": "09", "oct": "10", "nov": "11", "dec": "12" };
 
-        function clearAllData() {
-            if (confirm("Kya aap saara data clear karna chahte hain?")) {
+        // RESET PROGRAM FUNCTION
+        function resetFullProgram() {
+            if (confirm("⚠ WARNING: Kya aap sach me Pura Data hamesha ke liye delete karna chahte hain?")) {
+                localStorage.removeItem('ledgerData');
                 document.getElementById('billBody').innerHTML = '';
                 document.getElementById('paymentBody').innerHTML = '';
                 document.getElementById('partyName').value = '';
+                document.getElementById('rawText').value = '';
                 calculateAll();
             }
+        }
+
+        // AUTO SAVE FUNCTION
+        function saveData() {
+            let data = {
+                partyName: document.getElementById('partyName').value,
+                interestRate: document.getElementById('interestRate').value,
+                creditDays: document.getElementById('creditDays').value,
+                calculateUpto: document.getElementById('calculateUpto').value,
+                bills: [],
+                payments: []
+            };
+
+            document.querySelectorAll('#billBody tr').forEach(row => {
+                data.bills.push({
+                    date: row.querySelector('.bill-date').value,
+                    desc: row.querySelector('.inp-bill').value,
+                    amt: row.querySelector('.bill-amt').value,
+                    hidden: row.classList.contains('is-hidden')
+                });
+            });
+
+            document.querySelectorAll('#paymentBody tr').forEach(row => {
+                data.payments.push({
+                    date: row.querySelector('.pay-date').value,
+                    amt: row.querySelector('.pay-amt').value,
+                    hidden: row.classList.contains('is-hidden')
+                });
+            });
+
+            localStorage.setItem('ledgerData', JSON.stringify(data));
+        }
+
+        // LOAD DATA FUNCTION
+        function loadData() {
+            let saved = localStorage.getItem('ledgerData');
+            if (saved) {
+                let data = JSON.parse(saved);
+                document.getElementById('partyName').value = data.partyName || '';
+                document.getElementById('interestRate').value = data.interestRate || '1.5';
+                document.getElementById('creditDays').value = data.creditDays || '15';
+                if (data.calculateUpto) document.getElementById('calculateUpto').value = data.calculateUpto;
+
+                document.getElementById('billBody').innerHTML = '';
+                data.bills.forEach(b => addBillRow(b.date, b.desc, b.amt, b.hidden));
+
+                document.getElementById('paymentBody').innerHTML = '';
+                data.payments.forEach(p => addPaymentRow(p.date, p.amt, p.hidden));
+            }
+            calculateAll();
         }
 
         function toggleHiddenView() {
@@ -642,6 +707,7 @@
                     // Pass
                 } else if (originalLine.length > 5 && !originalLine.includes("---") && !document.getElementById('partyName').value && originalLine.includes("Company")) {
                     document.getElementById('partyName').value = originalLine.replace(/\s{2,}/g, ' ');
+                    saveData(); // Naam mila toh save karo
                 }
 
                 if (originalLine.includes("From")) {
@@ -680,33 +746,45 @@
             calculateAll();
         }
 
-        function addBillRow(date = "", desc = "", amt = "") {
+        // Isme 'isHidden' property add ki gayi hai data loading ke liye
+        function addBillRow(date = "", desc = "", amt = "", isHidden = false) {
             const tr = document.createElement('tr');
+            if (isHidden) tr.classList.add('is-hidden');
+            let btnClass = isHidden ? 'btn-unhide' : 'btn-hide';
+            let btnText = isHidden ? 'Unhide' : 'Hide';
+
             tr.innerHTML = `
             <td><input type="text" class="inp-table inp-date bill-date" value="${date}" placeholder="DD-MM-YYYY" onchange="calculateAll()"></td>
-            <td><input type="text" class="inp-table inp-bill" value="${desc}"></td>
+            <td><input type="text" class="inp-table inp-bill" value="${desc}" oninput="saveData()"></td>
             <td><input type="number" class="inp-table inp-amt bill-amt" value="${amt}" oninput="calculateAll()"></td>
             <td class="td-days t-days" style="color:#666">0</td>
             <td class="td-days b-days" style="color:#8a6d3b">0</td>
             <td class="td-int b-int" style="color:#a94442">0.00</td>
             <td class="td-tot b-tot" style="color:#c9302c">0.00</td>
-            <td class="td-act no-print"><button class="btn-hide" onclick="toggleRowHide(this)">Hide</button></td>
+            <td class="td-act no-print"><button class="${btnClass}" onclick="toggleRowHide(this)">${btnText}</button></td>
         `;
             document.getElementById('billBody').appendChild(tr);
         }
 
-        function addPaymentRow(date = "", amt = "") {
+        function addPaymentRow(date = "", amt = "", isHidden = false) {
             const tr = document.createElement('tr');
+            if (isHidden) tr.classList.add('is-hidden');
+            let btnClass = isHidden ? 'btn-unhide' : 'btn-hide';
+            let btnText = isHidden ? 'Unhide' : 'Hide';
+
             tr.innerHTML = `
             <td><input type="text" class="inp-table inp-date pay-date" value="${date}" placeholder="DD-MM-YYYY" onchange="calculateAll()"></td>
             <td><input type="number" class="inp-table inp-amt pay-amt" value="${amt}" oninput="calculateAll()"></td>
             <td class="td-days p-days" style="color:#3c763d">0</td>
             <td class="td-int p-int" style="color:#3c763d">0.00</td>
             <td class="td-tot p-tot" style="color:#28a745">0.00</td>
-            <td class="td-act no-print"><button class="btn-hide" onclick="toggleRowHide(this)">Hide</button></td>
+            <td class="td-act no-print"><button class="${btnClass}" onclick="toggleRowHide(this)">${btnText}</button></td>
         `;
             document.getElementById('paymentBody').appendChild(tr);
         }
+
+        function addBillRowManual() { addBillRow(); calculateAll(); }
+        function addPaymentRowManual() { addPaymentRow(); calculateAll(); }
 
         function parseDDMMYYYYtoJSDate(dateStr) {
             if (!dateStr || !dateStr.includes('-')) return NaN;
@@ -723,7 +801,6 @@
 
             let sDrAmt = 0, sDrInt = 0, sCrAmt = 0, sCrInt = 0;
 
-            // Bills
             document.querySelectorAll('#billBody tr').forEach(row => {
                 if (row.classList.contains('is-hidden')) return;
 
@@ -750,7 +827,6 @@
                 }
             });
 
-            // Payments
             document.querySelectorAll('#paymentBody tr').forEach(row => {
                 if (row.classList.contains('is-hidden')) return;
 
@@ -774,7 +850,6 @@
                 }
             });
 
-            // Update Totals
             document.getElementById('totBillAmt').innerText = sDrAmt.toFixed(2);
             document.getElementById('totBillInt').innerText = sDrInt.toFixed(2);
             document.getElementById('totBillFinal').innerText = (sDrAmt + sDrInt).toFixed(2);
@@ -791,6 +866,9 @@
             let net = finalDr - finalCr;
             document.getElementById('netLabel').innerText = net >= 0 ? "NET LENA (Dr):" : "NET DENA (Cr / Adv):";
             document.getElementById('netPayable').innerText = "₹ " + Math.abs(net).toFixed(2);
+
+            // DATA AUTO SAVE (Har calculation ke baad naya status save ho jayega)
+            saveData();
         }
     </script>
 </body>
