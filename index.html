@@ -139,14 +139,19 @@
             text-align: center;
         }
 
+        .inp-date {
+            width: auto;
+        }
+
         .inp-amt {
-            width: 95px;
+            width: auto;
             text-align: right;
         }
 
+        /* YE NAYI LINE ADD KAREIN */
         .inp-bill {
-            width: 100%;
-            text-align: left;
+            min-width: 250px !important;
+            overflow: visible !important;
         }
 
         /* Column Widths */
@@ -283,7 +288,6 @@
                 margin: 10mm;
             }
 
-            /* Margin kam kiya */
             .paste-container,
             .btn,
             .td-act,
@@ -327,8 +331,10 @@
                 display: none !important;
             }
 
-            /* Table Row Space Optimization */
+            /* Table aur Row Optimization */
             table {
+                table-layout: fixed;
+                width: 100%;
                 margin-bottom: 15px;
             }
 
@@ -336,15 +342,16 @@
             td {
                 padding: 3px 4px !important;
                 border: 1px solid #000 !important;
+                overflow-wrap: break-word;
             }
 
-            /* Padding bohot tight ki */
             th {
                 background-color: #f0f0f0 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
 
+            /* Inputs ki setting (sabko apni jagah me fix kiya) */
             input {
                 border: none !important;
                 background: transparent !important;
@@ -352,23 +359,81 @@
                 font-size: 10pt;
                 padding: 0;
                 margin: 0;
-                height: auto;
+                width: 100% !important;
+                box-sizing: border-box !important;
             }
 
             .inp-date {
-                width: auto;
+                text-align: center;
             }
 
             .inp-amt {
-                width: auto;
                 text-align: right;
             }
 
-            /* YE NAYI LINE ADD KAREIN */
-            .inp-bill {
-                min-width: 250px !important;
-                overflow: visible !important;
+            /* --- DEBIT TABLE COLUMNS (Aapki requirement ke hisaab se % set kiya) --- */
+            #billTable th:nth-child(1) {
+                width: 12%;
             }
+
+            /* Date (Kam kiya) */
+            #billTable th:nth-child(2) {
+                width: 33%;
+            }
+
+            /* Particular / Bill No (Kam kiya) */
+            #billTable th:nth-child(3) {
+                width: 11%;
+            }
+
+            /* Amount (Kam kiya) */
+            #billTable th:nth-child(4) {
+                width: 9%;
+            }
+
+            /* Total Days (Badhaya) */
+            #billTable th:nth-child(5) {
+                width: 9%;
+            }
+
+            /* Int Days (Badhaya) */
+            #billTable th:nth-child(6) {
+                width: 13%;
+            }
+
+            /* Interest (Badhaya) */
+            #billTable th:nth-child(7) {
+                width: 13%;
+            }
+
+            /* Total (Badhaya) */
+
+            /* --- CREDIT TABLE COLUMNS --- */
+            #paymentTable th:nth-child(1) {
+                width: 12%;
+            }
+
+            /* Date */
+            #paymentTable th:nth-child(2) {
+                width: 23%;
+            }
+
+            /* Jama Amount */
+            #paymentTable th:nth-child(3) {
+                width: 15%;
+            }
+
+            /* Days */
+            #paymentTable th:nth-child(4) {
+                width: 25%;
+            }
+
+            /* Interest */
+            #paymentTable th:nth-child(5) {
+                width: 25%;
+            }
+
+            /* Total Jama */
 
             /* Summary Box Print Optimization */
             .summary-box {
