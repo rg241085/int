@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Ledger Statement</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 10px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1a365d;
+            border-bottom: 2px solid #1a365d;
+            padding-bottom: 10px;
+        }
+
+        /* Paste Area */
+        .paste-container {
+            background: #f8f9fa;
+            border: 1px dashed #0078d7;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .paste-container textarea {
+            width: 100%;
+            height: 60px;
+            padding: 10px;
+            font-family: monospace;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        /* Controls */
+        .top-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ced4da;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .control-group input {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            padding: 6px 8px;
+            border-bottom: 2px solid;
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        .bill-title {
+            color: #c9302c;
+            border-bottom-color: #c9302c;
+            background: #fcf8f2;
+        }
+
+        .payment-title {
+            color: #28a745;
+            border-bottom-color: #28a745;
+            background: #f2fcf4;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        th,
+        td {
+            border: 1px solid #bbb;
+            padding: 5px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #eee;
+            font-size: 12px;
+        }
+
+        /* Input Styling */
+        .inp-table {
+            width: 100%;
+            border: 1px solid #ddd;
+            padding: 3px;
+            font-size: 12px;
+            border-radius: 2px;
+            box-sizing: border-box;
+        }
+
+        .inp-date {
+            width: 95px;
+            text-align: center;
+        }
+
+        .inp-amt {
+            width: 95px;
+            text-align: right;
+        }
+
+        .inp-bill {
+            width: 100%;
+            text-align: left;
+        }
+
+        /* Column Widths */
+        .td-days {
+            width: 65px;
+            font-weight: bold;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .td-int {
+            width: 95px;
+            text-align: right;
+            padding-right: 8px;
+            font-weight: bold;
+        }
+
+        .td-tot {
+            width: 105px;
+            text-align: right;
+            padding-right: 8px;
+            font-weight: bold;
+        }
+
+        .td-act {
+            width: 45px;
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            padding: 7px 12px;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background-color: #337ab7;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #5cb85c;
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: #f0ad4e;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-hide {
+            background-color: #f0ad4e;
+            color: black;
+            padding: 2px 5px;
+            font-size: 11px;
+            border-radius: 2px;
+        }
+
+        .btn-unhide {
+            background-color: #5cb85c;
+            color: white;
+            padding: 2px 5px;
+            font-size: 11px;
+            border-radius: 2px;
+        }
+
+        /* Totals Row */
+        .totals-row {
+            font-weight: bold;
+            background-color: #f9f9f9;
+            font-size: 13px;
+        }
+
+        .totals-row td {
+            text-align: right;
+            padding-right: 8px;
+        }
+
+        /* Single Line Summary Section */
+        .summary-box {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #fff;
+            border: 2px solid #333;
+            padding: 12px 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .summary-item {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .summary-item.total {
+            color: #c9302c;
+            font-size: 16px;
+            border-left: 2px solid #ccc;
+            padding-left: 15px;
+        }
+
+        /* Hide/Unhide Logic */
+        .is-hidden {
+            display: none;
+        }
+
+        body.view-hidden-mode .is-hidden {
+            display: table-row;
+            opacity: 0.4;
+            background-color: #e2e3e5;
+        }
+
+        body.view-hidden-mode .is-hidden input {
+            text-decoration: line-through;
+            background: transparent;
+        }
+
+        /* PRINT SETTINGS (Space Optimized) */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+
+            /* Margin kam kiya */
+            .paste-container,
+            .btn,
+            .td-act,
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+                padding: 0;
+                font-size: 10pt;
+            }
+
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+                border: none;
+                padding: 0;
+            }
+
+            .top-controls {
+                background: transparent;
+                border: none;
+                padding: 0;
+                margin-bottom: 10px;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+                border-radius: 0;
+            }
+
+            .control-group input {
+                border: none;
+                background: transparent;
+                font-size: 11pt;
+                padding: 0;
+                font-weight: bold;
+                color: #000;
+            }
+
+            .is-hidden {
+                display: none !important;
+            }
+
+            /* Table Row Space Optimization */
+            table {
+                margin-bottom: 15px;
+            }
+
+            th,
+            td {
+                padding: 3px 4px !important;
+                border: 1px solid #000 !important;
+            }
+
+            /* Padding bohot tight ki */
+            th {
+                background-color: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            input {
+                border: none !important;
+                background: transparent !important;
+                font-weight: normal;
+                font-size: 10pt;
+                padding: 0;
+                margin: 0;
+                height: auto;
+            }
+
+            .inp-date {
+                width: auto;
+            }
+
+            .inp-amt {
+                width: auto;
+                text-align: right;
+            }
+
+            /* Summary Box Print Optimization */
+            .summary-box {
+                border: 1.5px solid #000;
+                padding: 8px;
+                font-size: 11pt;
+                margin-top: 10px;
+            }
+
+            .summary-item.total {
+                font-size: 13pt;
+                border-left: 1.5px solid #000;
+                padding-left: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header-section">
+            <h2>Ledger & Interest Statement</h2>
+        </div>
+
+        <div class="paste-container no-print">
+            <textarea id="rawText"
+                placeholder="Data yahan paste karein (Naya data purane ke niche judega)..."></textarea>
+            <div style="display: flex; gap: 10px; justify-content: space-between; align-items: center;">
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="parsePastedText()">✓ Load Data</button>
+                    <button class="btn btn-secondary" onclick="clearAllData()">✗ Clear All Data</button>
+                </div>
+                <button class="btn btn-warning" id="toggleViewBtn" onclick="toggleHiddenView()">👁️ Show Hidden
+                    Entries</button>
+            </div>
+        </div>
+
+        <div class="top-controls">
+            <div class="control-group" style="flex-grow: 1;">
+                <label>Party Name:</label>
+                <input type="text" id="partyName" style="text-align: left; font-weight: bold; font-size: 15px;">
+            </div>
+            <div class="control-group">
+                <label>Rate (%/Month):</label>
+                <input type="number" id="interestRate" value="1.5" step="0.1" style="width: 80px;"
+                    onchange="calculateAll()">
+            </div>
+            <div class="control-group">
+                <label>Credit Days:</label>
+                <input type="number" id="creditDays" value="15" style="width: 80px;" onchange="calculateAll()">
+            </div>
+            <div class="control-group">
+                <label>Upto Date (DD-MM-YYYY):</label>
+                <input type="date" id="calculateUpto" onchange="calculateAll()" style="width: 120px;">
+            </div>
+            <div class="control-group no-print">
+                <button class="btn btn-primary" onclick="window.print()" style="height: 32px;">🖨️ Print
+                    Statement</button>
+            </div>
+        </div>
+
+        <div class="section-title bill-title">1. Debit (Dr) - Bills & Charges</div>
+        <table id="billTable">
+            <thead>
+                <tr>
+                    <th class="inp-date">Date</th>
+                    <th>Particular / Bill No</th>
+                    <th class="inp-amt">Amount (₹)</th>
+                    <th class="td-days" title="Total Days">Total Days</th>
+                    <th class="td-days" title="Interest Chargeable Days">Int. Days</th>
+                    <th class="td-int">Interest (₹)</th>
+                    <th class="td-tot">Total (₹)</th>
+                    <th class="td-act no-print">Act</th>
+                </tr>
+            </thead>
+            <tbody id="billBody"></tbody>
+            <tfoot>
+                <tr class="totals-row">
+                    <td colspan="2" style="color: #c9302c;">Total Debit (Dr):</td>
+                    <td id="totBillAmt">0.00</td>
+                    <td></td>
+                    <td></td>
+                    <td id="totBillInt">0.00</td>
+                    <td id="totBillFinal" style="color: #c9302c;">0.00</td>
+                    <td class="no-print"></td>
+                </tr>
+            </tfoot>
+        </table>
+        <button class="btn btn-primary no-print" onclick="addBillRow()" style="margin-bottom: 20px;">+ Add Manual
+            Bill</button>
+
+        <div class="section-title payment-title">2. Credit (Cr) - Jama / Payments</div>
+        <table id="paymentTable">
+            <thead>
+                <tr>
+                    <th class="inp-date">Date</th>
+                    <th class="inp-amt">Jama Amount (₹)</th>
+                    <th class="td-days">Total Days</th>
+                    <th class="td-int">Interest (₹)</th>
+                    <th class="td-tot">Total Jama (₹)</th>
+                    <th class="td-act no-print">Act</th>
+                </tr>
+            </thead>
+            <tbody id="paymentBody"></tbody>
+            <tfoot>
+                <tr class="totals-row">
+                    <td style="color: #28a745;">Total Credit (Cr):</td>
+                    <td id="totPayAmt">0.00</td>
+                    <td></td>
+                    <td id="totPayInt">0.00</td>
+                    <td id="totPayFinal" style="color: #28a745;">0.00</td>
+                    <td class="no-print"></td>
+                </tr>
+            </tfoot>
+        </table>
+        <button class="btn btn-success no-print" onclick="addPaymentRow()">+ Add Manual Payment</button>
+
+        <div class="no-print" style="font-size: 12px; color: #666; margin-top: 15px;">
+            * <strong>Total Days:</strong> Bill/Jama banne se le kar aaj tak ke kul din.<br>
+            * <strong>Int. Days:</strong> Vyaj ke din (Kul din me se credit chhoot katne ke baad).
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-item">
+                <span>Total Dr (Bills + Int):</span>
+                <span id="sumTotalBill">0.00</span>
+            </div>
+            <div class="summary-item" style="color: #28a745;">
+                <span>Total Cr (Jama + Int):</span>
+                <span id="sumTotalPay">0.00</span>
+            </div>
+            <div class="summary-item total">
+                <span id="netLabel">NET LENA:</span>
+                <span id="netPayable">0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('calculateUpto').valueAsDate = new Date();
+        const monthsMap = { "jan": "01", "feb": "02", "mar": "03", "apr": "04", "may": "05", "jun": "06", "jul": "07", "aug": "08", "sep": "09", "oct": "10", "nov": "11", "dec": "12" };
+
+        function clearAllData() {
+            if (confirm("Kya aap saara data clear karna chahte hain?")) {
+                document.getElementById('billBody').innerHTML = '';
+                document.getElementById('paymentBody').innerHTML = '';
+                document.getElementById('partyName').value = '';
+                calculateAll();
+            }
+        }
+
+        function toggleHiddenView() {
+            document.body.classList.toggle('view-hidden-mode');
+            let btn = document.getElementById('toggleViewBtn');
+            if (document.body.classList.contains('view-hidden-mode')) {
+                btn.innerText = "👀 Hide Dikh Rahi Hain (Click to Hide)";
+                btn.style.backgroundColor = "#d9534f";
+            } else {
+                btn.innerText = "👁️ Show Hidden Entries";
+                btn.style.backgroundColor = "#f0ad4e";
+            }
+        }
+
+        function toggleRowHide(btn) {
+            let row = btn.closest('tr');
+            row.classList.toggle('is-hidden');
+            if (row.classList.contains('is-hidden')) {
+                btn.innerText = "Unhide";
+                btn.className = "btn-unhide";
+            } else {
+                btn.innerText = "Hide";
+                btn.className = "btn-hide";
+            }
+            calculateAll();
+        }
+
+        function parseDateToDDMMYYYY(dateStr, startYear, endYear) {
+            let monthMatch = dateStr.match(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2})/i);
+            if (monthMatch) {
+                let m = monthMatch[1].toLowerCase(), d = monthMatch[2].padStart(2, '0');
+                let y = (m === 'jan' || m === 'feb' || m === 'mar') ? endYear : startYear;
+                return `${d}-${monthsMap[m]}-${y}`;
+            }
+            if (dateStr.includes('/')) {
+                let parts = dateStr.split('/');
+                if (parts.length === 3) {
+                    let y = parts[2].length === 2 ? "20" + parts[2] : parts[2];
+                    return `${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}-${y}`;
+                }
+            }
+            return dateStr;
+        }
+
+        function parsePastedText() {
+            let text = document.getElementById('rawText').value;
+            if (text.trim() === "") return;
+
+            let lines = text.split('\n');
+            let isLedgerFormat = text.includes("Account Statement");
+            let startYear = 2025, endYear = 2026;
+
+            lines.forEach(line => {
+                let originalLine = line.trim();
+                if ((originalLine.includes("Party Wise") || originalLine.includes("Account Statement")) && !document.getElementById('partyName').value) {
+                    // Pass
+                } else if (originalLine.length > 5 && !originalLine.includes("---") && !document.getElementById('partyName').value && originalLine.includes("Company")) {
+                    document.getElementById('partyName').value = originalLine.replace(/\s{2,}/g, ' ');
+                }
+
+                if (originalLine.includes("From")) {
+                    let match = originalLine.match(/(\d{4})/g);
+                    if (match && match.length >= 2) { startYear = parseInt(match[0]); endYear = parseInt(match[1]); }
+                }
+
+                let cleanLine = originalLine.replace(/Dr\.|Cr\.|Dr|Cr/gi, '').trim().replace(/\s+/g, ' ');
+
+                if (isLedgerFormat) {
+                    let monthMatch = cleanLine.match(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2})\s+(.*)$/i);
+                    if (monthMatch) {
+                        let formattedDate = parseDateToDDMMYYYY(`${monthMatch[1]} ${monthMatch[2]}`, startYear, endYear);
+                        let amounts = monthMatch[3].match(/(\d+\.\d{2})/g);
+                        if (amounts && amounts.length >= 2) {
+                            let amt = parseFloat(amounts[0]);
+                            let particular = monthMatch[3].split(/(\d+\.\d{2})/)[0].toLowerCase();
+                            if (particular.startsWith("to ")) {
+                                addBillRow(formattedDate, particular.substring(3).trim(), amt);
+                            }
+                            else if (particular.startsWith("by ")) { addPaymentRow(formattedDate, amt); }
+                        }
+                    }
+                } else {
+                    let parts = cleanLine.split(' ');
+                    if (parts.length >= 4 && /^\d{2}\/\d{2}\/\d{2}$/.test(parts[0])) {
+                        let amt = parseFloat(parts[3]);
+                        if (!isNaN(amt)) {
+                            let formattedDate = parseDateToDDMMYYYY(parts[0], startYear, endYear);
+                            addBillRow(formattedDate, parts[1], amt);
+                        }
+                    }
+                }
+            });
+            document.getElementById('rawText').value = '';
+            calculateAll();
+        }
+
+        function addBillRow(date = "", desc = "", amt = "") {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td><input type="text" class="inp-table inp-date bill-date" value="${date}" placeholder="DD-MM-YYYY" onchange="calculateAll()"></td>
+            <td><input type="text" class="inp-table inp-bill" value="${desc}"></td>
+            <td><input type="number" class="inp-table inp-amt bill-amt" value="${amt}" oninput="calculateAll()"></td>
+            <td class="td-days t-days" style="color:#666">0</td>
+            <td class="td-days b-days" style="color:#8a6d3b">0</td>
+            <td class="td-int b-int" style="color:#a94442">0.00</td>
+            <td class="td-tot b-tot" style="color:#c9302c">0.00</td>
+            <td class="td-act no-print"><button class="btn-hide" onclick="toggleRowHide(this)">Hide</button></td>
+        `;
+            document.getElementById('billBody').appendChild(tr);
+        }
+
+        function addPaymentRow(date = "", amt = "") {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td><input type="text" class="inp-table inp-date pay-date" value="${date}" placeholder="DD-MM-YYYY" onchange="calculateAll()"></td>
+            <td><input type="number" class="inp-table inp-amt pay-amt" value="${amt}" oninput="calculateAll()"></td>
+            <td class="td-days p-days" style="color:#3c763d">0</td>
+            <td class="td-int p-int" style="color:#3c763d">0.00</td>
+            <td class="td-tot p-tot" style="color:#28a745">0.00</td>
+            <td class="td-act no-print"><button class="btn-hide" onclick="toggleRowHide(this)">Hide</button></td>
+        `;
+            document.getElementById('paymentBody').appendChild(tr);
+        }
+
+        function parseDDMMYYYYtoJSDate(dateStr) {
+            if (!dateStr || !dateStr.includes('-')) return NaN;
+            let parts = dateStr.split('-');
+            if (parts.length !== 3) return NaN;
+            return new Date(parts[2], parseInt(parts[1]) - 1, parts[0]);
+        }
+
+        function calculateAll() {
+            const uptoStr = document.getElementById('calculateUpto').value;
+            const upto = new Date(uptoStr);
+            const rate = (parseFloat(document.getElementById('interestRate').value) || 0) * 12;
+            const cDays = parseInt(document.getElementById('creditDays').value) || 0;
+
+            let sDrAmt = 0, sDrInt = 0, sCrAmt = 0, sCrInt = 0;
+
+            // Bills
+            document.querySelectorAll('#billBody tr').forEach(row => {
+                if (row.classList.contains('is-hidden')) return;
+
+                let dText = row.querySelector('.bill-date').value;
+                let d = parseDDMMYYYYtoJSDate(dText);
+                let a = parseFloat(row.querySelector('.bill-amt').value) || 0;
+
+                if (!isNaN(d) && a > 0 && !isNaN(upto)) {
+                    let t = Math.max(0, Math.round((upto - d) / 86400000));
+                    let v = Math.max(0, t - cDays);
+                    let i = (a * rate * v) / 36500;
+                    let tot = a + i;
+
+                    row.querySelector('.t-days').innerText = t;
+                    row.querySelector('.b-days').innerText = v;
+                    row.querySelector('.b-int').innerText = i.toFixed(2);
+                    row.querySelector('.b-tot').innerText = tot.toFixed(2);
+                    sDrAmt += a; sDrInt += i;
+                } else {
+                    row.querySelector('.t-days').innerText = "0";
+                    row.querySelector('.b-days').innerText = "0";
+                    row.querySelector('.b-int').innerText = "0.00";
+                    row.querySelector('.b-tot').innerText = "0.00";
+                }
+            });
+
+            // Payments
+            document.querySelectorAll('#paymentBody tr').forEach(row => {
+                if (row.classList.contains('is-hidden')) return;
+
+                let dText = row.querySelector('.pay-date').value;
+                let d = parseDDMMYYYYtoJSDate(dText);
+                let a = parseFloat(row.querySelector('.pay-amt').value) || 0;
+
+                if (!isNaN(d) && a > 0 && !isNaN(upto)) {
+                    let t = Math.max(0, Math.round((upto - d) / 86400000));
+                    let i = (a * rate * t) / 36500;
+                    let tot = a + i;
+
+                    row.querySelector('.p-days').innerText = t;
+                    row.querySelector('.p-int').innerText = i.toFixed(2);
+                    row.querySelector('.p-tot').innerText = tot.toFixed(2);
+                    sCrAmt += a; sCrInt += i;
+                } else {
+                    row.querySelector('.p-days').innerText = "0";
+                    row.querySelector('.p-int').innerText = "0.00";
+                    row.querySelector('.p-tot').innerText = "0.00";
+                }
+            });
+
+            // Update Totals
+            document.getElementById('totBillAmt').innerText = sDrAmt.toFixed(2);
+            document.getElementById('totBillInt').innerText = sDrInt.toFixed(2);
+            document.getElementById('totBillFinal').innerText = (sDrAmt + sDrInt).toFixed(2);
+
+            document.getElementById('totPayAmt').innerText = sCrAmt.toFixed(2);
+            document.getElementById('totPayInt').innerText = sCrInt.toFixed(2);
+            document.getElementById('totPayFinal').innerText = (sCrAmt + sCrInt).toFixed(2);
+
+            let finalDr = sDrAmt + sDrInt;
+            let finalCr = sCrAmt + sCrInt;
+            document.getElementById('sumTotalBill').innerText = "₹ " + finalDr.toFixed(2);
+            document.getElementById('sumTotalPay').innerText = "₹ " + finalCr.toFixed(2);
+
+            let net = finalDr - finalCr;
+            document.getElementById('netLabel').innerText = net >= 0 ? "NET LENA (Dr):" : "NET DENA (Cr / Adv):";
+            document.getElementById('netPayable').innerText = "₹ " + Math.abs(net).toFixed(2);
+        }
+    </script>
+</body>
+
+</html>
