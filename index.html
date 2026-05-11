@@ -15,7 +15,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1050px;
             margin: auto;
             background: #fff;
             padding: 20px;
@@ -122,6 +122,13 @@
         th {
             background-color: #eee;
             font-size: 12px;
+        }
+
+        /* Checkbox Styling */
+        .row-chk {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
         }
 
         /* Input Styling */
@@ -238,31 +245,46 @@
             padding-right: 8px;
         }
 
-        /* Single Line Summary Section */
+        /* Summary Section */
+        .footer-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 10px;
+        }
+
         .summary-box {
             display: flex;
+            flex-direction: column;
             justify-content: space-around;
-            align-items: center;
             background: #fff;
             border: 2px solid #333;
-            padding: 12px 10px;
+            padding: 12px 15px;
             border-radius: 5px;
-            margin-top: 15px;
             font-size: 14px;
             font-weight: bold;
+            width: 300px;
+        }
+
+        .summary-box-selected {
+            border-color: #0078d7;
+            background: #f0f8ff;
+            width: 300px;
         }
 
         .summary-item {
             display: flex;
-            gap: 8px;
+            justify-content: space-between;
             align-items: center;
+            margin-bottom: 5px;
         }
 
         .summary-item.total {
             color: #c9302c;
             font-size: 16px;
-            border-left: 2px solid #ccc;
-            padding-left: 15px;
+            border-top: 2px solid #ccc;
+            padding-top: 5px;
+            margin-top: 5px;
         }
 
         /* Hide/Unhide Logic */
@@ -281,7 +303,7 @@
             background: transparent;
         }
 
-        /* PRINT SETTINGS (Space Optimized) */
+        /* PRINT SETTINGS */
         @media print {
             @page {
                 size: A4 portrait;
@@ -331,7 +353,6 @@
                 display: none !important;
             }
 
-            /* Table aur Row Optimization */
             table {
                 table-layout: fixed;
                 width: 100%;
@@ -351,7 +372,6 @@
                 print-color-adjust: exact;
             }
 
-            /* Inputs ki setting */
             input {
                 border: none !important;
                 background: transparent !important;
@@ -371,82 +391,93 @@
                 text-align: right;
             }
 
-            /* --- DEBIT TABLE COLUMNS --- */
-            #billTable th:nth-child(1) {
+            /* Checkbox header gayab ho gaya hai, isliye indexing +1 kardi print me */
+            #billTable th:nth-child(2) {
                 width: 12%;
             }
 
             /* Date */
-            #billTable th:nth-child(2) {
+            #billTable th:nth-child(3) {
                 width: 33%;
             }
 
             /* Particular / Bill No */
-            #billTable th:nth-child(3) {
+            #billTable th:nth-child(4) {
                 width: 11%;
             }
 
             /* Amount */
-            #billTable th:nth-child(4) {
-                width: 9%;
-            }
-
-            /* Total Days */
             #billTable th:nth-child(5) {
                 width: 9%;
             }
 
-            /* Int Days */
+            /* Total Days */
             #billTable th:nth-child(6) {
+                width: 9%;
+            }
+
+            /* Int Days */
+            #billTable th:nth-child(7) {
                 width: 13%;
             }
 
             /* Interest */
-            #billTable th:nth-child(7) {
+            #billTable th:nth-child(8) {
                 width: 13%;
             }
 
             /* Total */
 
-            /* --- CREDIT TABLE COLUMNS --- */
-            #paymentTable th:nth-child(1) {
+            #paymentTable th:nth-child(2) {
                 width: 12%;
             }
 
             /* Date */
-            #paymentTable th:nth-child(2) {
+            #paymentTable th:nth-child(3) {
                 width: 23%;
             }
 
             /* Jama Amount */
-            #paymentTable th:nth-child(3) {
+            #paymentTable th:nth-child(4) {
                 width: 15%;
             }
 
             /* Days */
-            #paymentTable th:nth-child(4) {
+            #paymentTable th:nth-child(5) {
                 width: 25%;
             }
 
             /* Interest */
-            #paymentTable th:nth-child(5) {
+            #paymentTable th:nth-child(6) {
                 width: 25%;
             }
 
             /* Total Jama */
 
-            /* Summary Box Print Optimization */
             .summary-box {
                 border: 1.5px solid #000;
                 padding: 8px;
                 font-size: 11pt;
                 margin-top: 10px;
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+            }
+
+            .summary-item {
+                margin-bottom: 0;
+                gap: 5px;
             }
 
             .summary-item.total {
-                font-size: 13pt;
+                border-top: none;
                 border-left: 1.5px solid #000;
+                padding-top: 0;
                 padding-left: 10px;
+                margin-top: 0;
+                font-size: 13pt;
             }
         }
     </style>
@@ -505,6 +536,7 @@
         <table id="billTable">
             <thead>
                 <tr>
+                    <th class="no-print" style="width: 30px;">✔</th>
                     <th class="inp-date">Date</th>
                     <th>Particular / Bill No</th>
                     <th class="inp-amt">Amount (₹)</th>
@@ -518,6 +550,7 @@
             <tbody id="billBody"></tbody>
             <tfoot>
                 <tr class="totals-row">
+                    <td class="no-print"></td>
                     <td colspan="2" style="color: #c9302c;">Total Debit (Dr):</td>
                     <td id="totBillAmt">0.00</td>
                     <td></td>
@@ -535,6 +568,7 @@
         <table id="paymentTable">
             <thead>
                 <tr>
+                    <th class="no-print" style="width: 30px;">✔</th>
                     <th class="inp-date">Date</th>
                     <th class="inp-amt">Jama Amount (₹)</th>
                     <th class="td-days">Total Days</th>
@@ -546,6 +580,7 @@
             <tbody id="paymentBody"></tbody>
             <tfoot>
                 <tr class="totals-row">
+                    <td class="no-print"></td>
                     <td style="color: #28a745;">Total Credit (Cr):</td>
                     <td id="totPayAmt">0.00</td>
                     <td></td>
@@ -558,28 +593,49 @@
         <button class="btn btn-success no-print" onclick="addPaymentRowManual()">+ Add Manual Payment</button>
 
         <div class="no-print" style="font-size: 12px; color: #666; margin-top: 15px;">
-            * <strong>Total Days:</strong> Bill/Jama banne se le kar aaj tak ke kul din.<br>
+            * <strong>Tick (✔):</strong> Kisi entry par tick lagane se uska hisaab niche 'Selected Entries' box me
+            aayega.<br>
             * <strong>Int. Days:</strong> Vyaj ke din (Kul din me se credit chhoot katne ke baad).
         </div>
 
-        <div class="summary-box">
-            <div class="summary-item">
-                <span>Total Dr (Bills + Int):</span>
-                <span id="sumTotalBill">0.00</span>
+        <div class="footer-flex">
+            <div class="summary-box summary-box-selected no-print">
+                <div style="text-align: center; color: #0078d7; font-size: 12px; margin-bottom: 5px;">☑ SELECTED ENTRIES
+                    TOTAL</div>
+                <div class="summary-item">
+                    <span>Selected Dr (Bills):</span>
+                    <span id="selTotalBill">0.00</span>
+                </div>
+                <div class="summary-item" style="color: #28a745;">
+                    <span>Selected Cr (Jama):</span>
+                    <span id="selTotalPay">0.00</span>
+                </div>
+                <div class="summary-item total" style="color: #0078d7;">
+                    <span id="selNetLabel">SEL. NET LENA:</span>
+                    <span id="selNetPayable">0.00</span>
+                </div>
             </div>
-            <div class="summary-item" style="color: #28a745;">
-                <span>Total Cr (Jama + Int):</span>
-                <span id="sumTotalPay">0.00</span>
-            </div>
-            <div class="summary-item total">
-                <span id="netLabel">NET LENA:</span>
-                <span id="netPayable">0.00</span>
+
+            <div class="summary-box">
+                <div class="no-print" style="text-align: center; color: #333; font-size: 12px; margin-bottom: 5px;">
+                    OVERALL GRAND TOTAL</div>
+                <div class="summary-item">
+                    <span>Total Dr (Bills + Int):</span>
+                    <span id="sumTotalBill">0.00</span>
+                </div>
+                <div class="summary-item" style="color: #28a745;">
+                    <span>Total Cr (Jama + Int):</span>
+                    <span id="sumTotalPay">0.00</span>
+                </div>
+                <div class="summary-item total">
+                    <span id="netLabel">NET LENA:</span>
+                    <span id="netPayable">0.00</span>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // PAGE LOAD HOTE HI PURANA DATA LOAD KAREGA
         window.onload = function () {
             if (!localStorage.getItem('ledgerData')) {
                 document.getElementById('calculateUpto').valueAsDate = new Date();
@@ -589,7 +645,6 @@
 
         const monthsMap = { "jan": "01", "feb": "02", "mar": "03", "apr": "04", "may": "05", "jun": "06", "jul": "07", "aug": "08", "sep": "09", "oct": "10", "nov": "11", "dec": "12" };
 
-        // RESET PROGRAM FUNCTION
         function resetFullProgram() {
             if (confirm("⚠ WARNING: Kya aap sach me Pura Data hamesha ke liye delete karna chahte hain?")) {
                 localStorage.removeItem('ledgerData');
@@ -601,7 +656,6 @@
             }
         }
 
-        // AUTO SAVE FUNCTION
         function saveData() {
             let data = {
                 partyName: document.getElementById('partyName').value,
@@ -617,7 +671,8 @@
                     date: row.querySelector('.bill-date').value,
                     desc: row.querySelector('.inp-bill').value,
                     amt: row.querySelector('.bill-amt').value,
-                    hidden: row.classList.contains('is-hidden')
+                    hidden: row.classList.contains('is-hidden'),
+                    checked: row.querySelector('.row-chk').checked
                 });
             });
 
@@ -625,14 +680,14 @@
                 data.payments.push({
                     date: row.querySelector('.pay-date').value,
                     amt: row.querySelector('.pay-amt').value,
-                    hidden: row.classList.contains('is-hidden')
+                    hidden: row.classList.contains('is-hidden'),
+                    checked: row.querySelector('.row-chk').checked
                 });
             });
 
             localStorage.setItem('ledgerData', JSON.stringify(data));
         }
 
-        // LOAD DATA FUNCTION
         function loadData() {
             let saved = localStorage.getItem('ledgerData');
             if (saved) {
@@ -643,10 +698,10 @@
                 if (data.calculateUpto) document.getElementById('calculateUpto').value = data.calculateUpto;
 
                 document.getElementById('billBody').innerHTML = '';
-                data.bills.forEach(b => addBillRow(b.date, b.desc, b.amt, b.hidden));
+                if (data.bills) data.bills.forEach(b => addBillRow(b.date, b.desc, b.amt, b.hidden, b.checked));
 
                 document.getElementById('paymentBody').innerHTML = '';
-                data.payments.forEach(p => addPaymentRow(p.date, p.amt, p.hidden));
+                if (data.payments) data.payments.forEach(p => addPaymentRow(p.date, p.amt, p.hidden, p.checked));
             }
             calculateAll();
         }
@@ -707,7 +762,7 @@
                     // Pass
                 } else if (originalLine.length > 5 && !originalLine.includes("---") && !document.getElementById('partyName').value && originalLine.includes("Company")) {
                     document.getElementById('partyName').value = originalLine.replace(/\s{2,}/g, ' ');
-                    saveData(); // Naam mila toh save karo
+                    saveData();
                 }
 
                 if (originalLine.includes("From")) {
@@ -746,14 +801,15 @@
             calculateAll();
         }
 
-        // Isme 'isHidden' property add ki gayi hai data loading ke liye
-        function addBillRow(date = "", desc = "", amt = "", isHidden = false) {
+        function addBillRow(date = "", desc = "", amt = "", isHidden = false, isChecked = false) {
             const tr = document.createElement('tr');
             if (isHidden) tr.classList.add('is-hidden');
             let btnClass = isHidden ? 'btn-unhide' : 'btn-hide';
             let btnText = isHidden ? 'Unhide' : 'Hide';
+            let chk = isChecked ? 'checked' : '';
 
             tr.innerHTML = `
+            <td class="no-print"><input type="checkbox" class="row-chk" onchange="calculateSelected()" ${chk}></td>
             <td><input type="text" class="inp-table inp-date bill-date" value="${date}" placeholder="DD-MM-YYYY" onchange="calculateAll()"></td>
             <td><input type="text" class="inp-table inp-bill" value="${desc}" oninput="saveData()"></td>
             <td><input type="number" class="inp-table inp-amt bill-amt" value="${amt}" oninput="calculateAll()"></td>
@@ -766,13 +822,15 @@
             document.getElementById('billBody').appendChild(tr);
         }
 
-        function addPaymentRow(date = "", amt = "", isHidden = false) {
+        function addPaymentRow(date = "", amt = "", isHidden = false, isChecked = false) {
             const tr = document.createElement('tr');
             if (isHidden) tr.classList.add('is-hidden');
             let btnClass = isHidden ? 'btn-unhide' : 'btn-hide';
             let btnText = isHidden ? 'Unhide' : 'Hide';
+            let chk = isChecked ? 'checked' : '';
 
             tr.innerHTML = `
+            <td class="no-print"><input type="checkbox" class="row-chk" onchange="calculateSelected()" ${chk}></td>
             <td><input type="text" class="inp-table inp-date pay-date" value="${date}" placeholder="DD-MM-YYYY" onchange="calculateAll()"></td>
             <td><input type="number" class="inp-table inp-amt pay-amt" value="${amt}" oninput="calculateAll()"></td>
             <td class="td-days p-days" style="color:#3c763d">0</td>
@@ -791,6 +849,32 @@
             let parts = dateStr.split('-');
             if (parts.length !== 3) return NaN;
             return new Date(parts[2], parseInt(parts[1]) - 1, parts[0]);
+        }
+
+        // NAYA FUNCTION: Sirf Tick ki gayi entries ka total nikalne ke liye
+        function calculateSelected() {
+            let selDr = 0, selCr = 0;
+
+            document.querySelectorAll('#billBody tr').forEach(row => {
+                if (!row.classList.contains('is-hidden') && row.querySelector('.row-chk').checked) {
+                    selDr += parseFloat(row.querySelector('.b-tot').innerText) || 0;
+                }
+            });
+
+            document.querySelectorAll('#paymentBody tr').forEach(row => {
+                if (!row.classList.contains('is-hidden') && row.querySelector('.row-chk').checked) {
+                    selCr += parseFloat(row.querySelector('.p-tot').innerText) || 0;
+                }
+            });
+
+            document.getElementById('selTotalBill').innerText = "₹ " + selDr.toFixed(2);
+            document.getElementById('selTotalPay').innerText = "₹ " + selCr.toFixed(2);
+
+            let net = selDr - selCr;
+            document.getElementById('selNetLabel').innerText = net >= 0 ? "SEL. NET LENA:" : "SEL. NET DENA (Cr):";
+            document.getElementById('selNetPayable').innerText = "₹ " + Math.abs(net).toFixed(2);
+
+            saveData(); // Tick lagane par bhi save ho jayega
         }
 
         function calculateAll() {
@@ -867,8 +951,8 @@
             document.getElementById('netLabel').innerText = net >= 0 ? "NET LENA (Dr):" : "NET DENA (Cr / Adv):";
             document.getElementById('netPayable').innerText = "₹ " + Math.abs(net).toFixed(2);
 
-            // DATA AUTO SAVE (Har calculation ke baad naya status save ho jayega)
-            saveData();
+            // Tick ki gayi entries ka hisaab bhi update karo
+            calculateSelected();
         }
     </script>
 </body>
